@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  auth-db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./services/auth/.env   # DB creds
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth   # point to service-specific Dockerfile
+    depends_on:
+      - auth-db
+    env_file:
+      - ./services/auth/.env
+    volumes:
+      - .:/app                      # mount entire project for dev (absolute imports)
+    ports:
+      - "8001:8000"
+
+volumes:
+  auth_data:

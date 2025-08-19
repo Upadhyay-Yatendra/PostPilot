@@ -1,0 +1,15 @@
+# Dockerfile.auth
+FROM python:3.11-slim
+
+# Set project root as WORKDIR
+WORKDIR /app
+
+# Copy only auth service dependencies first (for caching)
+COPY ./services/auth/requirements.txt ./services/auth/requirements.txt
+RUN pip install --no-cache-dir -r ./services/auth/requirements.txt
+
+# Copy the whole project
+COPY . .
+
+# Run FastAPI from project root
+CMD ["uvicorn", "services.auth.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
