@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+# Set project root as WORKDIR
+WORKDIR /app
+
+# Copy only postgen service dependencies first (for caching)
+COPY ./services/postgen/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+# Copy the whole project
+COPY . .
+
+# Run FastAPI from project root
+CMD ["uvicorn", "services.postgen.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

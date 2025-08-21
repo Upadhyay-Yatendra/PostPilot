@@ -10,6 +10,17 @@ services:
       - "5433:5432"
     volumes:
       - auth_data:/var/lib/postgresql/data
+  
+  postgen-db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./services/postgen/.env   # DB creds
+    ports:
+      - "5434:5432"   # Expose on different host port to avoid conflict
+    volumes:
+      - postgen_data:/var/lib/postgresql/data
+
 
   auth-service:
     build:
@@ -23,6 +34,21 @@ services:
       - .:/app                      # mount entire project for dev (absolute imports)
     ports:
       - "8001:8000"
+  
+  postgen-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgen
+    depends_on:
+       - postgen-db
+    env_file:
+      - ./services/postgen/.env   # DB creds
+    volumes:
+      - .:/app
+    ports:
+      - "8003:8000"
 
 volumes:
   auth_data:
+  postgen_data:
+

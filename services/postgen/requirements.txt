@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+langchain
+openai
+httpx
+numpy
+scikit-learn    # for cosine similarity if you want
+python-dotenv
+langchain-community
+tiktoken
+
+
