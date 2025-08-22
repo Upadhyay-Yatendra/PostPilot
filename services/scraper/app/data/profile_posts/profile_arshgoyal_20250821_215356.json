@@ -1,0 +1,16 @@
+{
+  "profile_url": "https://www.linkedin.com/in/arshgoyal/",
+  "scraped_at": "2025-08-22T03:23:56.645486+05:30",
+  "total_posts": 2,
+  "posts": [
+    {
+      "post_id": 1,
+      "text": "Last week I spent 3 hours building a dashboard that should have taken 30 minutes and you know the reason..\n\nA single typo in a metric reference that took me forever to find. There has to be a better way, right?\n\nWhile researching, I came across's Analytics as Code and I must say, I read through the details and it sounded amazing until I realized there is much more.\n\nFirst, the setup is pretty straightforward. Cursor already understands YAML, and GoodData's VS Code extension handles schema validation. For e.g. when I make a mistake - like referencing a non-existent metric - the extension flags it immediately and Cursor just fixes it automatically.\n\nSecondly, they have added MCP server integration that actually connects to your database. So when a new table gets added, Cursor can scan the schema, sample some data, and generate the dataset definition. No more manual exploration.\n\nI'm spending way less time on syntax and configuration errors now, and more time on actual analysis. Plus everything's in version control with proper CI/CD.\n\nIf you want to read more about it :",
+      "likes": 234,
+      "comments": 10,
+      "reposts": 3,
+      "engagement": 247,
+      "scraped_at": "2025-08-22T03:23:56.452784+05:30",
+      "source": "profile",
+      "profile_url": "https://www.linkedin.com/in/arshgoyal",
+      "created_at": 
