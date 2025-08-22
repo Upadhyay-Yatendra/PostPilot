@@ -1,0 +1,28 @@
+{
+  "identifier": "arshgoyal",
+  "type": "profile",
+  "scraped_at": "2025-08-22T22:55:12.105363+05:30",
+  "total_posts": 2,
+  "posts": [
+    {
+      "text": "Google invited me for their Pixel Launch Event to experience the AI capabilities of Gemini and Pixel 10 and honestly... this wasn't a typical phone launch.\n\nGoogle basically skipped the spec sheet entirely and said \"forget everything you know about smartphones.”\n\nThe demos were insane:\n- Magic Cue knew I needed my boarding pass before I even thought about it. No apps, no searching - it just appeared.\n- 100x zoom that I watched zoom into a street sign half a kilometer away with crystal clear detail. The AI literally recreates details that shouldn't exist.\n- Live translation during phone calls - guy spoke English, person in Japan heard perfect Japanese in the caller's actual voice. Not robotic at all.\n- Pixel Watch 4 now detects if your heart stops and calls for satellite rescue. Anywhere on Earth.\n- Pixel Buds 2a doing real-time face-to-face translation felt straight out of sci-fi.\n\nYour phone actually understands you as a person now. Your habits, schedule, needs.\n\nThis feels like iPhone 2007 all over again. Not because of what it does today, but what it suggests is coming.\n\nWhat do you think?",
+      "likes": 231,
+      "comments": 6,
+      "reposts": 0,
+      "engagement": 237,
+      "scraped_at": "2025-08-22T22:55:09.331228",
+      "source": "profile",
+      "profile_url": "https://www.linkedin.com/in/arshgoyal/"
+    },
+    {
+      "text": "Last week I spent 3 hours building a dashboard that should have taken 30 minutes and you know the reason..\n\nA single typo in a metric reference that took me forever to find. There has to be a better way, right?\n\nWhile researching, I came across's Analytics as Code and I must say, I read through the details and it sounded amazing until I realized there is much more.\n\nFirst, the setup is pretty straightforward. Cursor already understands YAML, and GoodData's VS Code extension handles schema validation. For e.g. when I make a mistake - like referencing a non-existent metric - the extension flags it immediately and Cursor just fixes it automatically.\n\nSecondly, they have added MCP server integration that actually connects to your database. So when a new table gets added, Cursor can scan the schema, sample some data, and generate the dataset definition. No more manual exploration.\n\nI'm spending way less time on syntax and configuration errors now, and more time on actual analysis. Plus everything's in version control with proper CI/CD.\n\nIf you want to read more about it :",
+      "likes": 313,
+      "comments": 21,
+      "reposts": 3,
+      "engagement": 337,
+      "scraped_at": "2025-08-22T22:55:09.459781",
+      "source": "profile",
+      "profile_url": "https://www.linkedin.com/in/arshgoyal/"
+    }
+  ]
+}
