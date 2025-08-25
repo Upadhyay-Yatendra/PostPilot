@@ -1,54 +1,74 @@
 version: "3.9"
 
 services:
+  # Auth still has its own DB
   auth-db:
     image: postgres:15
     restart: always
     env_file:
-      - ./services/auth/.env   # DB creds
+      - ./services/auth/.env
     ports:
       - "5433:5432"
     volumes:
       - auth_data:/var/lib/postgresql/data
   
-  postgen-db:
-    image: postgres:15
+  # Shared MongoDB for scraper + postgen
+  mongo:
+    image: mongo:latest
+    container_name: mongo
     restart: always
-    env_file:
-      - ./services/postgen/.env   # DB creds
     ports:
-      - "5434:5432"   # Expose on different host port to avoid conflict
+      - "27017:27017"
     volumes:
-      - postgen_data:/var/lib/postgresql/data
+      - mongo_data:/data/db
 
+  # Auth service
 
   auth-service:
     build:
       context: .
-      dockerfile: Dockerfile.auth   # point to service-specific Dockerfile
+      dockerfile: Dockerfile.auth
     depends_on:
       - auth-db
     env_file:
       - ./services/auth/.env
     volumes:
-      - .:/app                      # mount entire project for dev (absolute imports)
+      - .:/app        # mount entire repo, not just /app
     ports:
       - "8001:8000"
-  
+
   postgen-service:
     build:
       context: .
       dockerfile: Dockerfile.postgen
     depends_on:
-       - postgen-db
+       - mongo
     env_file:
-      - ./services/postgen/.env   # DB creds
+      - ./services/postgen/.env
     volumes:
       - .:/app
     ports:
       - "8003:8000"
 
+  scraper-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.scraper
+    container_name: scraper
+    restart: always
+    depends_on:
+      - mongo
+    env_file:
+      - ./services/scraper/.env
+    volumes:
+      - .:/app
+      - /ms-playwright   # <-- this keeps Chromium safe
+      - ./services/scraper/state.json:/app/state.json  # <-- mount saved LinkedIn session
+    ports:
+      - "8005:8000"
+
+
+
 volumes:
   auth_data:
-  postgen_data:
-
+  mongo_data:

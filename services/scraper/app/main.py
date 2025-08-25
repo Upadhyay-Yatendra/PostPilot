@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 
 from services.scraper.app.routes.scraping import router as scraping_router
-from services.scraper.app.db.mongo_db import connect_to_mongo, close_mongo_connection
+from shared.db.mongo_db import connect_to_mongo, close_mongo_connection
 
 
 
