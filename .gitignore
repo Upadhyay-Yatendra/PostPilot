@@ -29,6 +29,7 @@ Thumbs.db
 # Environment variables
 .env
 *.env.local
+.env.docker
 
 # IDEs/editors
 .vscode/
