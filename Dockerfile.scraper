@@ -6,7 +6,7 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Install only the bare minimum system deps for Chromium
+# Install system deps needed by Chromium
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl ca-certificates \
     libnss3 libxss1 libasound2 libatk1.0-0 libcups2 libgtk-3-0 \
@@ -15,18 +15,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-unifont \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# ---------------------------
+# Install Python deps
+# ---------------------------
+
+# 1. Copy and install shared first (so Docker can cache it)
+COPY ./shared /shared
+RUN pip install --no-cache-dir /shared
+
+# 2. Copy scraper requirements and install
 COPY ./services/scraper/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Make folder for Playwright browsers
+# ---------------------------
+# Playwright setup
+# ---------------------------
 RUN mkdir -p /ms-playwright
-
-# Install only Chromium (skip Firefox + WebKit to save ~200–300MB)
 RUN PLAYWRIGHT_BROWSERS_PATH=/ms-playwright playwright install chromium
 
-# Copy project files
-COPY . .
+# ---------------------------
+# Copy only scraper service code
+# ---------------------------
+COPY ./services/scraper /app
 
+# ---------------------------
 # Run FastAPI
-CMD ["uvicorn", "services.scraper.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# ---------------------------
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

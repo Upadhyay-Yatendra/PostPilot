@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from services.auth.app.routes.auth import router as auth_router
+from app.routes.auth import router as auth_router
 from shared.db.pg_db import engine, Base
-from services.auth.app.models.user import User
+from app.models.user import User
 
 app = FastAPI()
-app.include_router(auth_router)
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+# refactored the url so as to maintain consistency with other services
 
 @app.get("/")
 def healthcheck():

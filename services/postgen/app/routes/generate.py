@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from shared.db.pg_db import get_db
-from services.postgen.app.models.user_post import UserPost
-from services.postgen.app.utils.embeddings import get_embedding, most_similar_post
-from services.postgen.app.utils.prompt import build_prompt
-from services.postgen.app.llm import generate_post_langchain
+from app.models.user_post import UserPost
+from app.utils.embeddings import get_embedding, most_similar_post
+from app.utils.prompt import build_prompt
+from app.llm import generate_post_langchain
 import httpx
 
 router = APIRouter()

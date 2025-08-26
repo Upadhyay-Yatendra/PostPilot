@@ -3,8 +3,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
-from services.auth.app.models.user import User
-from services.auth.app.utils.auth import (
+from app.models.user import User
+from app.utils.auth import (
     hash_password,
     verify_password,
     create_access_token,

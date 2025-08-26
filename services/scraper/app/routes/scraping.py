@@ -9,8 +9,8 @@ import os
 import json
 from pathlib import Path
 from shared.db.mongo_db import get_database
-from services.scraper.app.models.post import PostInDB, UserPosts, HashtagPosts
-from services.scraper.app.utils.linkedin_bot import LinkedInBot
+from app.models.post import PostInDB, UserPosts, HashtagPosts
+from app.utils.linkedin_bot import LinkedInBot
 
 
 

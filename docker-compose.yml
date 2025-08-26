@@ -1,7 +1,9 @@
 version: "3.9"
 
 services:
-  # Auth still has its own DB
+  # -----------------
+  # Databases
+  # -----------------
   auth-db:
     image: postgres:15
     restart: always
@@ -12,7 +14,6 @@ services:
     volumes:
       - auth_data:/var/lib/postgresql/data
   
-  # Shared MongoDB for scraper + postgen
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -22,8 +23,9 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  # -----------------
   # Auth service
-
+  # -----------------
   auth-service:
     build:
       context: .
@@ -32,24 +34,27 @@ services:
       - auth-db
     env_file:
       - ./services/auth/.env
-    volumes:
-      - .:/app        # mount entire repo, not just /app
     ports:
       - "8001:8000"
+    # no volume override → keeps shared + service code inside image
 
+  # -----------------
+  # Postgen service
+  # -----------------
   postgen-service:
     build:
       context: .
       dockerfile: Dockerfile.postgen
     depends_on:
-       - mongo
+      - mongo
     env_file:
       - ./services/postgen/.env
-    volumes:
-      - .:/app
     ports:
       - "8003:8000"
 
+  # -----------------
+  # Scraper service
+  # -----------------
   scraper-service:
     build:
       context: .
@@ -60,14 +65,27 @@ services:
       - mongo
     env_file:
       - ./services/scraper/.env
-    volumes:
-      - .:/app
-      - /ms-playwright   # <-- this keeps Chromium safe
-      - ./services/scraper/state.json:/app/state.json  # <-- mount saved LinkedIn session
     ports:
       - "8005:8000"
+    volumes:
+      - /ms-playwright
+      - ./services/scraper/state.json:/app/state.json  # safe: single-file override
 
-
+  # -----------------
+  # API Gateway (Main)
+  # -----------------
+  main-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    depends_on:
+      - auth-service
+      - postgen-service
+      - scraper-service
+    env_file:
+      ./services/main/.env.docker   # use docker env
+    ports:
+      - "8000:8000"
 
 volumes:
   auth_data:

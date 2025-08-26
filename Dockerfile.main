@@ -1,26 +1,25 @@
 FROM python:3.11-slim
 
-# Set working directory to service root
 WORKDIR /app
 
 # ---------------------------
 # Install dependencies
 # ---------------------------
 
-# 1. Copy and install shared first (so Docker caches it separately)
+# 1. Copy and install shared
 COPY ./shared /shared
 RUN pip install --no-cache-dir /shared
 
-# 2. Install postgen-specific dependencies
-COPY ./services/postgen/requirements.txt /tmp/requirements.txt
+# 2. Copy and install main-specific deps
+COPY ./services/main/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # ---------------------------
-# Copy only postgen service code
+# Copy only main service code
 # ---------------------------
-COPY ./services/postgen /app
+COPY ./services/main /app
 
 # ---------------------------
 # Run FastAPI
 # ---------------------------
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

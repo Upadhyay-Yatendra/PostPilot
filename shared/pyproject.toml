@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shared"
+version = "0.1.0"
+description = "Shared utilities for PostPilot microservices"
+authors = [{ name="Yatendra" }]
+dependencies = [
+    "sqlalchemy>=2.0,<3.0",
+    "psycopg2-binary>=2.9,<3.0",
+    "motor>=3.1,<4.0",
+    "python-dotenv>=1.0,<2.0"
+]
