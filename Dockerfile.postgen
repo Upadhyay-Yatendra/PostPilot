@@ -7,9 +7,10 @@ WORKDIR /app
 # Install dependencies
 # ---------------------------
 
-# 1. Copy and install shared first (so Docker caches it separately)
-COPY ./shared /shared
-RUN pip install --no-cache-dir /shared
+# 1.Copy shared package and pyproject.toml and install it
+COPY ./shared ./shared
+COPY ./pyproject.toml ./pyproject.toml
+RUN pip install --no-cache-dir .
 
 # 2. Install postgen-specific dependencies
 COPY ./services/postgen/requirements.txt /tmp/requirements.txt

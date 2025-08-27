@@ -30,6 +30,7 @@ Thumbs.db
 .env
 *.env.local
 .env.docker
+.env.db
 
 # IDEs/editors
 .vscode/
@@ -45,3 +46,4 @@ coverage/
 
 # ignoring docker-compose for dev environment for hot reloading and volume mounting
 docker-compose.override.yml
+structure.txt

@@ -19,9 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Python deps
 # ---------------------------
 
-# 1. Copy and install shared first (so Docker can cache it)
-COPY ./shared /shared
-RUN pip install --no-cache-dir /shared
+# 1.Copy shared package and pyproject.toml and install it
+COPY ./shared ./shared
+COPY ./pyproject.toml ./pyproject.toml
+RUN pip install --no-cache-dir .
 
 # 2. Copy scraper requirements and install
 COPY ./services/scraper/requirements.txt /tmp/requirements.txt

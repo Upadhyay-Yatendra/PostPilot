@@ -5,6 +5,7 @@ from app.models.user_post import UserPost
 from app.utils.embeddings import get_embedding, most_similar_post
 from app.utils.prompt import build_prompt
 from app.llm import generate_post_langchain
+from app.config import SCRAPER_SERVICE_URL
 import httpx
 
 router = APIRouter()
@@ -37,7 +38,7 @@ async def generate_post(
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.get(
-                    f"http://scraper-service:8002/top-hashtag", params={"hashtag": hashtag}
+                    f"{SCRAPER_SERVICE_URL}/scrape/top-hashtag", params={"hashtag": hashtag}
                 )
                 if resp.status_code == 200:
                     data = resp.json()

@@ -14,7 +14,7 @@ app = FastAPI(
 )
 
 # Include scraping routes
-app.include_router(scraping_router, prefix="/api/v1", tags=["scraping"])
+app.include_router(scraping_router, prefix="/scraper", tags=["Scraper"])
 
 
 

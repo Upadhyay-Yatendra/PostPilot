@@ -4,7 +4,8 @@ from shared.db.pg_db import engine, Base
 from app.models.user_post import UserPost
 
 app = FastAPI()
-app.include_router(generate_router)
+app.include_router(generate_router, prefix="/postgen", tags=["Post Generation"])
+
 
 @app.get("/")
 def healthcheck():

@@ -188,7 +188,7 @@ def save_posts_to_json(posts_data: List[dict], identifier: str, is_hashtag: bool
 
 # ======== Routes ========
 
-@router.get("/scrape/profile/posts", response_model=ProfilePostsResponse)
+@router.get("/profile/posts", response_model=ProfilePostsResponse)
 async def get_user_profile_posts(
     profile_url: str,
     n_posts: int = 10,

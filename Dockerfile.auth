@@ -2,24 +2,22 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# ---------------------------
-# Install dependencies
-# ---------------------------
+# Copy shared package and pyproject.toml and install it
+COPY ./shared ./shared
+COPY ./pyproject.toml ./pyproject.toml
+RUN pip install --no-cache-dir .
 
-# 1. Copy and install shared first
-COPY ./shared /shared
-RUN pip install --no-cache-dir /shared
+# DEBUG: Check installation
+RUN pip list | grep shared
+RUN python -c "import sys; print('Python path:', sys.path)"
+RUN python -c "import shared; print('SUCCESS: shared imported')"
 
-# 2. Copy and install auth-specific deps
+# Copy and install auth-specific deps
 COPY ./services/auth/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# ---------------------------
-# Copy only auth service code
-# ---------------------------
-COPY ./services/auth /app
+# Instead of: COPY ./services/auth ./
+# Do this to maintain proper structure:
+COPY ./services/auth ./services/auth
 
-# ---------------------------
-# Run FastAPI
-# ---------------------------
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

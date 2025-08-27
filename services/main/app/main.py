@@ -9,7 +9,7 @@ app = FastAPI(
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(postgen.router, prefix="/api/v1/postgen", tags=["Post Generation"])
 app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["Engagement Metrics"])
-app.include_router(scraper.router, prefix="/api/v1", tags=["Scraper"])
+app.include_router(scraper.router, prefix="/api/v1/scraper", tags=["Scraper"])
 
 @app.get("/health")
 def healthcheck():

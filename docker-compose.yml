@@ -8,7 +8,7 @@ services:
     image: postgres:15
     restart: always
     env_file:
-      - ./services/auth/.env
+      - ./services/auth/.env.db
     ports:
       - "5433:5432"
     volumes:
