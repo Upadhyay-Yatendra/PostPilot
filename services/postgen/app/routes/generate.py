@@ -1,13 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
-from shared.db.pg_db import get_db
-from app.models.user_post import UserPost
+from shared.db.mongo_db import get_database, POSTS_COLLECTION_NAME, HASHTAG_POSTS_COLLECTION_NAME
 from app.utils.embeddings import get_embedding, most_similar_post
 from app.utils.prompt import build_prompt
 from app.llm import generate_post_langchain
-from app.config import SCRAPER_SERVICE_URL
-import httpx
 
 router = APIRouter()
 
@@ -23,34 +19,37 @@ class GeneratePostRequest(BaseModel):
 
 
 @router.post("/generate")
-async def generate_post(
-    req: GeneratePostRequest,
-    db: Session = Depends(get_db)
-):
+async def generate_post(req: GeneratePostRequest, db=Depends(get_database)):
+    # 1. Get user's recent posts (from MongoDB posts collection)
+    user_posts_cursor = db[POSTS_COLLECTION_NAME].find({"username": req.username})
+    user_document = await user_posts_cursor.to_list(length=1)
 
-   # Fetch posts for this linkedin username
-    user_posts = db.query(UserPost).filter(UserPost.username == req.username).all()
+    user_posts = []
+    if user_document:
+        all_posts = user_document[0].get("posts", [])
+        user_posts = sorted(all_posts, key=lambda x: x.get("scraped_at", ""), reverse=True)[:10]
+        print(f"Using {len(user_posts)} most recent posts for style analysis")
+    else:
+        print(f"No posts found for username {req.username}")
 
-    # 2. Generate embedding for prompt and find most similar user post style
-    prompt_embedding = get_embedding(req.prompt)
-    style_sample = most_similar_post(user_posts, prompt_embedding)
-    
-    # 3. Get trending post sample from Scraper service
+    # 2. Find most similar user post style
+    style_sample = None
+    if user_posts:
+        prompt_embedding = get_embedding(req.prompt)
+        style_sample = most_similar_post(user_posts, prompt_embedding)
+
+    # 3. Get trending post sample from hashtag_posts collection
     trending_sample = None
     if req.hashtag:
         try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(
-                    f"{SCRAPER_SERVICE_URL}/scrape/top-hashtag", params={"hashtag": hashtag}
-                )
-                if resp.status_code == 200:
-                    data = resp.json()
-                    trending_sample = data.get("top_post")
-        except Exception:
-            trending_sample = None
+            hashtag_doc = await db[HASHTAG_POSTS_COLLECTION_NAME].find_one({"hashtag": req.hashtag.lower()})
+            if hashtag_doc and hashtag_doc.get("posts"):
+                trending_posts = hashtag_doc["posts"]
+                trending_sample = max(trending_posts, key=lambda x: x.get("engagement", 0))["text"]
+        except Exception as e:
+            print(f"Error fetching trending sample: {e}")
 
-    # 4. Build full prompt with LangChain prompt template
-    # Build final prompt
+    # 4. Build final prompt
     final_prompt = build_prompt(
         req.prompt,
         req.topic,
@@ -61,10 +60,13 @@ async def generate_post(
         trending_sample,
     )
 
-    # 5. Generate post(s) using LangChain chain
-    # Generate with LLM
-    generated_posts = generate_post_langchain(
-        final_prompt, num_variations=min(req.num_variations, 2)
-    )
+    # 5. Generate post(s)
+    generated_posts = generate_post_langchain(final_prompt, num_variations=min(req.num_variations, 2))
 
-    return {"variations": generated_posts}
+    return {
+        "variations": generated_posts,
+        "user_posts_count": len(user_posts),
+        "username_used": req.username,
+        "style_sample_found": style_sample is not None,
+        "trending_sample_found": trending_sample is not None,
+    }
