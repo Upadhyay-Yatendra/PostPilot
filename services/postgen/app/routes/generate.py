@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from shared.db.pg_db import get_db
 from app.models.user_post import UserPost
@@ -10,31 +11,33 @@ import httpx
 
 router = APIRouter()
 
+class GeneratePostRequest(BaseModel):
+    username: str
+    prompt: str
+    topic: str | None = None
+    tone: str | None = None
+    length: str | None = None
+    audience: str | None = None
+    hashtag: str | None = None
+    num_variations: int = 1
+
+
 @router.post("/generate")
 async def generate_post(
-    request: Request,
+    req: GeneratePostRequest,
     db: Session = Depends(get_db)
 ):
-    body = await request.json()
-    user_id = body.get("user_id")
-    prompt = body.get("prompt")
-    topic = body.get("topic")
-    tone = body.get("tone")
-    length = body.get("length")
-    audience = body.get("audience")
-    hashtag = body.get("hashtag")
-    num_variations = min(int(body.get("num_variations", 1)), 2)
 
-    # 1. Get user's recent posts + embeddings
-    user_posts = db.query(UserPost).filter(UserPost.user_id == user_id).all()
+   # Fetch posts for this linkedin username
+    user_posts = db.query(UserPost).filter(UserPost.username == req.username).all()
 
     # 2. Generate embedding for prompt and find most similar user post style
-    prompt_embedding = get_embedding(prompt)
+    prompt_embedding = get_embedding(req.prompt)
     style_sample = most_similar_post(user_posts, prompt_embedding)
     
     # 3. Get trending post sample from Scraper service
     trending_sample = None
-    if hashtag:
+    if req.hashtag:
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.get(
@@ -47,9 +50,21 @@ async def generate_post(
             trending_sample = None
 
     # 4. Build full prompt with LangChain prompt template
-    final_prompt = build_prompt(prompt, topic, tone, length, audience, style_sample, trending_sample)
+    # Build final prompt
+    final_prompt = build_prompt(
+        req.prompt,
+        req.topic,
+        req.tone,
+        req.length,
+        req.audience,
+        style_sample,
+        trending_sample,
+    )
 
     # 5. Generate post(s) using LangChain chain
-    generated_posts = generate_post_langchain(final_prompt, num_variations=num_variations)
+    # Generate with LLM
+    generated_posts = generate_post_langchain(
+        final_prompt, num_variations=min(req.num_variations, 2)
+    )
 
     return {"variations": generated_posts}

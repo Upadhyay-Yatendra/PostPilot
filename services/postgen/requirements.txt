@@ -10,5 +10,6 @@ scikit-learn    # for cosine similarity if you want
 python-dotenv
 langchain-community
 tiktoken
+pydantic
 
 
