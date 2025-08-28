@@ -236,33 +236,82 @@ async def get_hashtag_posts(
     try:
         clean_hashtag = hashtag.lstrip('#')
         hashtag_doc = await db.hashtag_posts.find_one({"hashtag": clean_hashtag})
-        if hashtag_doc and "posts" in hashtag_doc and len(hashtag_doc["posts"]) >= n_posts:
-            posts_sorted = sorted(hashtag_doc["posts"], key=lambda x: x.get("scraped_at", ""), reverse=True)[:n_posts]
-            response_posts = [convert_post_to_response_format(post) for post in posts_sorted]
+        
+        if hashtag_doc and "posts" in hashtag_doc and len(hashtag_doc["posts"]) >= 2:
+            # Get top 2 posts from cache (already filtered during storage)
+            cached_posts = hashtag_doc["posts"]
+            
+            # Sort by engagement (highest first) - defensive programming in case order changed
+            posts_sorted_by_engagement = sorted(
+                cached_posts, 
+                key=lambda x: x.get("engagement", 0), 
+                reverse=True
+            )[:2]  # Ensure we only get top 2
+            
+            response_posts = [convert_post_to_response_format(post) for post in posts_sorted_by_engagement]
             execution_time = (datetime.utcnow() - start_time).total_seconds()
+            
             return HashtagPostsResponse(
-                success=True, message=f"Retrieved posts from database cache for #{clean_hashtag}",
-                total_posts=len(response_posts), posts=response_posts,
-                from_cache=True, execution_time_seconds=execution_time
+                success=True, 
+                message=f"Retrieved top 2 posts by engagement from database cache for #{clean_hashtag}",
+                total_posts=len(response_posts), 
+                posts=response_posts,
+                from_cache=True, 
+                execution_time_seconds=execution_time
             )
+        
+        # If not enough posts in cache, scrape new ones
         bot = LinkedInBot(email=os.getenv("LINKEDIN_EMAIL"), password=os.getenv("LINKEDIN_PASSWORD"), headless=True)
         await bot.start()
         await bot.login()
+        
+        # Scrape n_posts to get a good sample for trend analysis
         scraped_posts = await bot.scrape_hashtag_posts(clean_hashtag, n_posts)
         await bot.close()
-        saved_posts = await save_hashtag_posts_to_db(scraped_posts, clean_hashtag, db)
+        
+        print(f"📊 Scraped {len(scraped_posts)} posts for trend analysis")
+        print(f"📈 Engagement values: {[post.get('engagement', 0) for post in scraped_posts]}")
+        
+        # Sort by engagement and get ONLY top 2 for storage
+        posts_sorted_by_engagement = sorted(
+            scraped_posts, 
+            key=lambda x: x.get("engagement", 0), 
+            reverse=True
+        )
+        
+        # Take only top 2 posts for database storage
+        top_2_posts = posts_sorted_by_engagement[:2]
+        
+        print(f"💾 Storing only top 2 posts with engagement: {[post.get('engagement', 0) for post in top_2_posts]}")
+        
+        # Save ONLY the top 2 posts to database
+        saved_posts = await save_hashtag_posts_to_db(top_2_posts, clean_hashtag, db)
+        
+        # Save all scraped posts to JSON file for trend analysis (optional)
         save_posts_to_json(scraped_posts, clean_hashtag, is_hashtag=True)
+        
         response_posts = [convert_post_to_response_format(post) for post in saved_posts]
         execution_time = (datetime.utcnow() - start_time).total_seconds()
+        
         return HashtagPostsResponse(
-            success=True, message=f"Successfully scraped posts for #{clean_hashtag}",
-            total_posts=len(response_posts), posts=response_posts,
-            from_cache=False, execution_time_seconds=execution_time
+            success=True, 
+            message=f"Scraped {len(scraped_posts)} posts, stored top 2 by engagement for #{clean_hashtag}",
+            total_posts=len(response_posts), 
+            posts=response_posts,
+            from_cache=False, 
+            execution_time_seconds=execution_time
         )
+        
     except Exception as e:
         execution_time = (datetime.utcnow() - start_time).total_seconds()
-        return HashtagPostsResponse(success=False, message=str(e), total_posts=0, posts=[], from_cache=False, execution_time_seconds=execution_time)
-
+        return HashtagPostsResponse(
+            success=False, 
+            message=str(e), 
+            total_posts=0, 
+            posts=[], 
+            from_cache=False, 
+            execution_time_seconds=execution_time
+        )
 @router.get("/health")
 async def health_check():
     return {

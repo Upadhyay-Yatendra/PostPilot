@@ -1,0 +1,58 @@
+{
+  "identifier": "servers",
+  "type": "hashtag",
+  "scraped_at": "2025-08-28T15:16:30.227088+05:30",
+  "total_posts": 5,
+  "posts": [
+    {
+      "text": "Hello hashtag #Connections Please do Apply, if you've worked on hashtag #NAS hashtag #SAN hashtag #Storages hashtag #Servers hashtag #Troubleshootings hashtag #Raidconfigurations hashtag #Bangalore hashtag #Immediatejoiners",
+      "likes": 14,
+      "comments": 1,
+      "reposts": 0,
+      "engagement": 15,
+      "scraped_at": "2025-08-28T09:46:28.272436",
+      "source": "hashtag",
+      "hashtag": "servers"
+    },
+    {
+      "text": "📌Server Types & Functions: 🔹Web Server: Delivers websites to your browser. 🔹Mail Server: Sends & receives your emails. 🔹DNS Server: Converts domain names into IP. 🔹Proxy Server: Works as a filter or middleman for requests. 🔹FTP Server: Transfers files between devices. 🔹Origin Server: Stores the original content of websites. Knowing these servers is essential for Networking & Cyber Security professionals! hashtag #Servers hashtag #NetworkingBasics hashtag #CyberSecurity hashtag #Networking hashtag #AshishPrajapati",
+      "likes": 66,
+      "comments": 0,
+      "reposts": 9,
+      "engagement": 75,
+      "scraped_at": "2025-08-28T09:46:28.674923",
+      "source": "hashtag",
+      "hashtag": "servers"
+    },
+    {
+      "text": "The Server Spectrum: Essential DevOps Knowledge 🖥️ As a DevOps pro, master these server types: 1. Physical Servers: On-premises hardware for your apps and services. 2. Virtual Machines (VMs): Virtualized environments running multiple OSes on a single host. 3. Containers: Lightweight, portable units packaging apps with dependencies. 4. Serverless Computing: Cloud-based execution where the provider manages the servers. 5. Edge Servers: Servers closer to end-users for low-latency, responsive apps. Navigating this server spectrum is key to becoming a true DevOps master. 🚀 hashtag #devOps hashtag #servers hashtag #VirtualMachines hashtag #containers hashtag #serverless hashtag #nsd hashtag #cloud",
+      "likes": 66,
+      "comments": 4,
+      "reposts": 10,
+      "engagement": 80,
+      "scraped_at": "2025-08-28T09:46:29.134004",
+      "source": "hashtag",
+      "hashtag": "servers"
+    },
+    {
+      "text": "Hello Connections ! Over the past few weeks, I have been learning, exploring, and sharing my knowledge through a series of beginner-friendly blogs on IT Infrastructure, Virtualization, and Cloud Computing on Medium Platform. 1)What is Server? Understanding Servers https://lnkd.in/dD7WNcR4 2)Virtualization :The Magic of Running Multiple Machines on One https://lnkd.in/dwXs_9Wi 3)Understanding Hypervisors https://lnkd.in/dEyTa2zw 4)What is Cloud Computing? https://lnkd.in/d_hMkmys 5)Understanding Cloud Providers: Who Powers the Cloud https://lnkd.in/d-yiYpSN This journey is not only about writing but also about continuous learning and exploration. My aim is to simplify these concepts and make them more accessible for learners, professionals, and anyone curious about modern computing. hashtag #CloudComputing hashtag #Virtualization hashtag #Servers hashtag #Hypervisors hashtag #CloudProviders hashtag #DevOps hashtag #TechLearning hashtag #ITInfrastructure hashtag #Medium",
+      "likes": 21,
+      "comments": 1,
+      "reposts": 0,
+      "engagement": 22,
+      "scraped_at": "2025-08-28T09:46:29.454922",
+      "source": "hashtag",
+      "hashtag": "servers"
+    },
+    {
+      "text": "“🚀 Servers are the backbone of every modern business—whether for AI/ML, ERP, virtualization, or cloud. When selecting a new server, decision makers weigh many factors: performance, uptime, cost, and OEM support. 💡 We’d love to hear from our network: 👉 What’s YOUR top priority when buying a server? Vote below & share your thoughts in the comments!” hashtag #DellEMC hashtag #LenovoThinkSystem hashtag #HPE hashtag #Servers hashtag #DataCenter hashtag #Virtualization hashtag #AI hashtag #HybridCloud hashtag #ServerMentor hashtag #Megahertz",
+      "likes": 1,
+      "comments": 0,
+      "reposts": 0,
+      "engagement": 1,
+      "scraped_at": "2025-08-28T09:46:29.787137",
+      "source": "hashtag",
+      "hashtag": "servers"
+    }
+  ]
+}

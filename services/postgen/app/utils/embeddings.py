@@ -1,6 +1,6 @@
 from langchain.embeddings.openai import OpenAIEmbeddings
 import numpy as np
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 # Initialize OpenAI embeddings
 embeddings = OpenAIEmbeddings()
@@ -17,14 +17,15 @@ def cosine_similarity(a: List[float], b: List[float]) -> float:
     """
     a = np.array(a)
     b = np.array(b)
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
-def most_similar_post(user_posts: List, prompt_embedding: List[float]) -> Optional[str]:
+def most_similar_post(user_posts: List[Dict[str, Any]], prompt_embedding: List[float]) -> Optional[str]:
     """
     Find the most similar post to the given prompt embedding.
+    ✅ FIXED: Now generates embeddings on-the-fly instead of expecting pre-stored embeddings
 
     Args:
-        user_posts: A list of user posts, each with an `embedding` attribute (comma-separated string).
+        user_posts: A list of user post dictionaries (each must have "text").
         prompt_embedding: The embedding of the prompt to compare against.
 
     Returns:
@@ -33,23 +34,34 @@ def most_similar_post(user_posts: List, prompt_embedding: List[float]) -> Option
     max_sim = -1
     best_post = None
 
-    for post in user_posts:
-        if not post.embedding:
-            continue
-        try:
-            # Convert the embedding string to a list of floats
-            emb = [float(x) for x in post.embedding.split(",")]
-        except ValueError:
-            # Skip posts with invalid embeddings
+    print(f"Analyzing {len(user_posts)} posts for style similarity...")
+
+    for i, post in enumerate(user_posts):
+        post_text = post.get("text")
+        if not post_text or len(post_text.strip()) < 10:  # Skip very short posts
             continue
 
-        # Calculate cosine similarity
-        sim = cosine_similarity(emb, prompt_embedding)
-        if sim > max_sim:
-            max_sim = sim
-            best_post = post.text
+        try:
+            # ✅ Generate embedding on-the-fly
+            print(f"Generating embedding for post {i+1}...")
+            post_embedding = get_embedding(post_text)
+            
+            # Calculate cosine similarity
+            sim = cosine_similarity(post_embedding, prompt_embedding)
+            print(f"Post {i+1} similarity: {sim:.3f}")
+            
+            if sim > max_sim:
+                max_sim = sim
+                best_post = post_text
+                print(f"New best post found with similarity: {sim:.3f}")
+                
+        except Exception as e:
+            print(f"Error generating embedding for post {i+1}: {e}")
+            continue
 
     if best_post is None:
-        raise ValueError("No valid posts with embeddings found.")
+        print("No valid posts found for style matching")
+        return None
     
+    print(f"Best matching post found with similarity: {max_sim:.3f}")
     return best_post
