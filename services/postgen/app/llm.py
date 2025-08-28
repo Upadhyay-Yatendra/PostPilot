@@ -13,7 +13,8 @@ chain = LLMChain(llm=llm, prompt=prompt_template)
 
 def generate_post_langchain(prompt: str, num_variations: int = 1):
     results = []
-    for _ in range(num_variations):
+    for i in range(num_variations):
+        print(f"Generating variation {i+1}...")
         res = chain.run(prompt=prompt)
         results.append(res.strip())
     return results

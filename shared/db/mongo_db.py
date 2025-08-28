@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Absolute path to your .env
-ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"  # app/db -> app -> scraper/.env
+# ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"  # app/db -> app -> scraper/.env
+ENV_PATH = Path(__file__).resolve().parent.parent / ".env"  # db -> shared -> .env
+
 load_dotenv(dotenv_path=ENV_PATH)
 
 MONGO_URI = os.getenv("MONGODB_URI")
@@ -34,3 +36,5 @@ def get_database() -> AsyncIOMotorDatabase:
     if database is None:
         raise RuntimeError("Database not initialized. Call connect_to_mongo() first.")
     return database
+
+
