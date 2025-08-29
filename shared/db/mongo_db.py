@@ -13,7 +13,7 @@ MONGO_URI = os.getenv("MONGODB_URI")
 DB_NAME = os.getenv("MONGODB_NAME")
 POSTS_COLLECTION_NAME = os.getenv("POSTS_COLLECTION", "posts")
 HASHTAG_POSTS_COLLECTION_NAME = os.getenv("HASHTAG_POSTS_COLLECTION", "hashtag_posts")
-
+GENERATED_POSTS_COLLECTION_NAME = os.getenv("GENERATED_POSTS_COLLECTION", "generated_posts")
 client: AsyncIOMotorClient | None = None
 database: AsyncIOMotorDatabase | None = None
 

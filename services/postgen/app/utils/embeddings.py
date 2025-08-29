@@ -21,8 +21,11 @@ def cosine_similarity(a: List[float], b: List[float]) -> float:
 
 def most_similar_post(user_posts: List[Dict[str, Any]], prompt_embedding: List[float]) -> Optional[str]:
     """
+    DEPRECATED: This function is now replaced by Pinecone vector search.
+    Kept for backward compatibility.
+    
     Find the most similar post to the given prompt embedding.
-    ✅ FIXED: Now generates embeddings on-the-fly instead of expecting pre-stored embeddings
+    Now generates embeddings on-the-fly instead of expecting pre-stored embeddings.
 
     Args:
         user_posts: A list of user post dictionaries (each must have "text").
@@ -34,7 +37,8 @@ def most_similar_post(user_posts: List[Dict[str, Any]], prompt_embedding: List[f
     max_sim = -1
     best_post = None
 
-    print(f"Analyzing {len(user_posts)} posts for style similarity...")
+    print(f"[DEPRECATED] Analyzing {len(user_posts)} posts for style similarity...")
+    print("Consider using PineconeService.find_similar_post() for better performance")
 
     for i, post in enumerate(user_posts):
         post_text = post.get("text")
@@ -42,7 +46,7 @@ def most_similar_post(user_posts: List[Dict[str, Any]], prompt_embedding: List[f
             continue
 
         try:
-            # ✅ Generate embedding on-the-fly
+            # Generate embedding on-the-fly
             print(f"Generating embedding for post {i+1}...")
             post_embedding = get_embedding(post_text)
             
