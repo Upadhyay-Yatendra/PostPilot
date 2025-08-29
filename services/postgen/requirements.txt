@@ -11,3 +11,4 @@ python-dotenv
 langchain-community
 tiktoken
 pinecone
+pydantic

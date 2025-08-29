@@ -3,6 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
+from app.utils.linkedin import extract_linkedin_username
 from app.models.user import User
 from app.utils.auth import (
     hash_password,
@@ -19,6 +20,7 @@ security = HTTPBearer()
 class SignupRequest(BaseModel):
     email: EmailStr
     password: str
+    linkedin_url: str  # user provides URL
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -27,6 +29,7 @@ class LoginRequest(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    linkedin_url: str | None = None
 
 class TokenOut(BaseModel):
     access_token: str
@@ -34,14 +37,22 @@ class TokenOut(BaseModel):
     user: UserOut | None = None
 
 # ======== Routes ========
+
+from app.utils.linkedin import extract_linkedin_username
+
 @router.post("/signup", response_model=TokenOut)
 def signup(req: SignupRequest, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == req.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     try:
+        linkedin_username = extract_linkedin_username(req.linkedin_url)
         hashed_pw = hash_password(req.password)
-        new_user = User(email=req.email, hashed_password=hashed_pw)
+        new_user = User(
+            email=req.email,
+            hashed_password=hashed_pw,
+            linkedin_username=linkedin_username,
+        )
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
@@ -49,12 +60,15 @@ def signup(req: SignupRequest, db: Session = Depends(get_db)):
         db.rollback()
         raise
 
-    # Auto-login after signup
     token = create_access_token({"user_id": new_user.id, "email": new_user.email})
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": new_user.id, "email": new_user.email},
+        "user": {
+            "id": new_user.id,
+            "email": new_user.email,
+            "linkedin_username": new_user.linkedin_username,
+        },
     }
 
 @router.post("/login", response_model=TokenOut)
@@ -69,7 +83,11 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email},
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "linkedin_username": user.linkedin_username,
+        },
     }
 
 @router.get("/verify")
@@ -89,7 +107,12 @@ def me(credentials: HTTPAuthorizationCredentials = Security(security), db: Sessi
     user_id = payload.get("user_id")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
-    user = db.query(User).get(user_id)
+    user = db.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"id": user.id, "email": user.email}
+    return {
+        "id": user.id,
+        "email": user.email,
+        "linkedin_username": user.linkedin_username,
+    }
+
