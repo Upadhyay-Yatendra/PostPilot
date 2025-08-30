@@ -14,6 +14,6 @@ async def user_engagement(
 ):
     # Get the user's top posts from Scraper service
     params = {"profile_url": profile_url, "n_posts": n_posts}
-    posts_data = await call_service("get", f"{SCRAPER_SERVICE_URL}/api/v1/scrape/profile/posts", params=params)
+    posts_data = await call_service("get", f"{SCRAPER_SERVICE_URL}/api/v1/scrape/profile/posts", params=params , service_name="scraper")
     # Do further analytics/aggregation here, or just return
     return posts_data

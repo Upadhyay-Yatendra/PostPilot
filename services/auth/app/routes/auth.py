@@ -29,7 +29,7 @@ class LoginRequest(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
-    linkedin_url: str | None = None
+    linkedin_username: str | None = None
 
 class TokenOut(BaseModel):
     access_token: str
@@ -42,9 +42,14 @@ from app.utils.linkedin import extract_linkedin_username
 
 @router.post("/signup", response_model=TokenOut)
 def signup(req: SignupRequest, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == req.email).first()
-    if existing:
+    existing_email = db.query(User).filter(User.email == req.email).first()
+    if existing_email:
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    linkedin_username = extract_linkedin_username(req.linkedin_url)
+    existing_linkedin = db.query(User).filter(User.linkedin_username == linkedin_username).first()
+    if existing_linkedin:
+        raise HTTPException(status_code=400, detail="LinkedIn username already registered")
     try:
         linkedin_username = extract_linkedin_username(req.linkedin_url)
         hashed_pw = hash_password(req.password)
@@ -56,9 +61,11 @@ def signup(req: SignupRequest, db: Session = Depends(get_db)):
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-    except Exception:
+    except Exception as e:
         db.rollback()
-        raise
+        # Log the error for debugging
+        print(f"Error while creating user: {e}")
+        raise HTTPException(status_code=500, detail="An internal server error occurred")
 
     token = create_access_token({"user_id": new_user.id, "email": new_user.email})
     return {

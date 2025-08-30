@@ -16,7 +16,8 @@ async def proxy_profile_posts(
         return await call_service(
             "get",
             f"{SCRAPER_SERVICE_URL}/scraper/profile/posts",
-            params={"profile_url": profile_url, "n_posts": n_posts}
+            params={"profile_url": profile_url, "n_posts": n_posts},
+            service_name="scraper"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Scraper service error: {e}")
@@ -33,7 +34,8 @@ async def proxy_hashtag_posts(
         return await call_service(
             "get",
             f"{SCRAPER_SERVICE_URL}/scraper/scrape/hashtag/posts",
-            params={"hashtag": hashtag, "n_posts": n_posts}
+            params={"hashtag": hashtag, "n_posts": n_posts},
+            service_name="scraper"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Scraper service error: {e}")
