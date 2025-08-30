@@ -20,7 +20,7 @@ security = HTTPBearer()
 class SignupRequest(BaseModel):
     email: EmailStr
     password: str
-    linkedin_url: str  # user provides URL
+    linkedin_username: str  # user provides URL
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -29,7 +29,7 @@ class LoginRequest(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
-    linkedin_url: str | None = None
+    linkedin_username: str | None = None
 
 class TokenOut(BaseModel):
     access_token: str
