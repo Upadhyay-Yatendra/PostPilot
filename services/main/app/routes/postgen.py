@@ -9,5 +9,5 @@ router = APIRouter()
 async def generate_post(request: Request, user=Depends(get_jwt_user)):
     data = await request.json()
     data["username"] = user["username"]
-    result = await call_service("post", f"{POSTGEN_SERVICE_URL}/generate", json=data)
+    result = await call_service("post", f"{POSTGEN_SERVICE_URL}/generate", json=data , service_name="postgen")
     return result
