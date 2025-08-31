@@ -23,18 +23,6 @@ export default function NavBar() {
           <span className="text-xl font-semibold text-gray-800">Postpilot</span>
         </div>
 
-        {/* Desktop Nav Links */}
-        <div className="hidden md:flex space-x-6 text-gray-700 font-medium">
-          <Link href="/dashboard" className="hover:text-[#227cb0] transition">
-            Dashboard
-          </Link>
-          <Link href="/about" className="hover:text-[#227cb0] transition">
-            About Us
-          </Link>
-          <Link href="/profile" className="hover:text-[#227cb0] transition">
-            My Profile
-          </Link>
-        </div>
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex space-x-3">
