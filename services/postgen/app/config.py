@@ -14,3 +14,6 @@ PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "user-posts")
 
 # MongoDB Collections
 GENERATED_POSTS_COLLECTION_NAME = "generated_posts"
+
+
+SCRAPER_SERVICE_URL = os.getenv("SCRAPER_SERVICE_URL", "http://scraper-service:8000")

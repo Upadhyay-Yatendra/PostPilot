@@ -1,5 +1,20 @@
 from fastapi import FastAPI
 from app.routes import auth, postgen, metrics, scraper
+import logging
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()  # Console output
+    ]
+)
+
+# Set specific logger levels
+logging.getLogger("httpx").setLevel(logging.WARNING)  # Reduce httpx noise
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)  # Reduce uvicorn noise
 
 app = FastAPI(
     title="PostPilot Main API Gateway",

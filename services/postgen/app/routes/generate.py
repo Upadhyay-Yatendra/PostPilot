@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List
@@ -5,15 +6,16 @@ from shared.db.mongo_db import get_database, POSTS_COLLECTION_NAME
 from app.utils.embeddings import get_embedding
 from app.utils.prompt import build_prompt
 from app.llm import generate_post_langchain
-from app.config import  GENERATED_POSTS_COLLECTION_NAME
+from app.config import GENERATED_POSTS_COLLECTION_NAME, SCRAPER_SERVICE_URL
 from app.utils.pinecone import pinecone_service
 from app.models.generated_post import GeneratedPostItem
 from datetime import datetime
 import httpx
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Request body model
+# Request body model - FIXED with username field
 class GeneratePostRequest(BaseModel):
     prompt: str = Field(..., description="The main prompt for post generation")
     topic: Optional[str] = Field(None, description="Topic for the post")
@@ -22,6 +24,7 @@ class GeneratePostRequest(BaseModel):
     audience: Optional[str] = Field(None, description="Target audience")
     hashtag: Optional[str] = Field(None, description="Hashtag to get trending samples")
     num_variations: Optional[int] = Field(1, ge=1, le=3, description="Number of variations to generate (1-3)")
+    username: Optional[str] = Field(None, description="LinkedIn username (added by main service from JWT)")
 
 async def ensure_user_posts_in_pinecone(username: str, db):
     """
@@ -107,9 +110,11 @@ async def save_generated_posts(db, username: str, post_items: List[GeneratedPost
         raise
 
 @router.post("/generate")
-async def generate_post(req: GeneratePostRequest, db = Depends(get_database)):
+async def generate_post(req: GeneratePostRequest, db=Depends(get_database)):
     """Enhanced post generation with better user handling"""
     try:
+        logger.info(f"Received post generation request for username: {req.username}")
+        
         # Extract parameters
         prompt = req.prompt
         topic = req.topic
@@ -118,13 +123,17 @@ async def generate_post(req: GeneratePostRequest, db = Depends(get_database)):
         audience = req.audience
         hashtag = req.hashtag
         num_variations = min(req.num_variations or 1, 3)
-        username = req.username  # Get username from JWT via main service middleware
+        username = req.username
+        
+        if not username:
+            raise HTTPException(status_code=400, detail="Username is required")
         
         # Extract username from LinkedIn URL if needed
-        if 'linkedin.com' in username:
+        if username and 'linkedin.com' in username:
             if '/in/' in username:
                 username = username.split('/in/')[-1].rstrip('/')
         
+        logger.info(f"Processing request for user: {username}")
         print(f"Processing request for user: {username}")
         
         # 1. Ensure user posts are in Pinecone (check Pinecone -> MongoDB -> Embed if needed)
@@ -144,7 +153,7 @@ async def generate_post(req: GeneratePostRequest, db = Depends(get_database)):
             try:
                 async with httpx.AsyncClient() as client:
                     resp = await client.get(
-                        f"{SCRAPER_SERVICE_URL}/scraper/scrape/hashtag/posts",
+                        f"{SCRAPER_SERVICE_URL}/scraper/hashtag/posts",
                         params={"hashtag": hashtag, "n_posts": 5}
                     )
                     if resp.status_code == 200:
@@ -161,25 +170,33 @@ async def generate_post(req: GeneratePostRequest, db = Depends(get_database)):
 
         # 5. Generate posts
         generated_posts = generate_post_langchain(final_prompt, num_variations=num_variations)
+        logger.info(f"Generated {len(generated_posts)} post variations")
         
-        # 6. Prepare post items for saving
+        # 6. Prepare post items for saving - CORRECTED VERSION
         post_items = []
         for i, post_text in enumerate(generated_posts):
             post_item = GeneratedPostItem(
-                text=post_text,
-                prompt=prompt,
-                topic=topic,
-                tone=tone,
-                length=length,
-                audience=audience,
-                hashtag=hashtag,
+                original_prompt=prompt,           # CORRECT FIELD NAME
+                generated_text=post_text,         # CORRECT FIELD NAME
+                parameters={                      # CORRECT - put these in parameters dict
+                    "topic": topic,
+                    "tone": tone,
+                    "length": length, 
+                    "audience": audience,
+                    "hashtag": hashtag
+                },
+                style_sample_used=style_sample,
+                trending_sample_used=trending_sample,
                 variation_number=i + 1,
                 created_at=datetime.utcnow()
             )
             post_items.append(post_item)
         
+        logger.info(f"Created {len(post_items)} post items")
+        
         # 7. Save to MongoDB
         doc_id = await save_generated_posts(db, username, post_items)
+        logger.info(f"Saved posts to MongoDB with doc_id: {doc_id}")
         
         # Return response
         return {
@@ -193,11 +210,12 @@ async def generate_post(req: GeneratePostRequest, db = Depends(get_database)):
         }
         
     except Exception as e:
+        logger.error(f"Error in generate_post: {e}")
         print(f"Error in generate_post: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/history/{username}")
-async def get_user_history(username: str, limit: int = 20, db = Depends(get_database)):
+async def get_user_history(username: str, limit: int = 20, db=Depends(get_database)):
     """Get generation history for a user"""
     try:
         collection = db[GENERATED_POSTS_COLLECTION_NAME]

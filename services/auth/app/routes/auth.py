@@ -9,7 +9,7 @@ from app.utils.auth import (
     hash_password,
     verify_password,
     create_access_token,
-    decode_access_token,   # <-- add this tiny helper in utils if you don't have it yet (shown below)
+    decode_access_token,
 )
 from shared.db.pg_db import get_db
 
@@ -20,7 +20,7 @@ security = HTTPBearer()
 class SignupRequest(BaseModel):
     email: EmailStr
     password: str
-    linkedin_username: str  # user provides URL
+    linkedin_url: str
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -38,8 +38,6 @@ class TokenOut(BaseModel):
 
 # ======== Routes ========
 
-from app.utils.linkedin import extract_linkedin_username
-
 @router.post("/signup", response_model=TokenOut)
 def signup(req: SignupRequest, db: Session = Depends(get_db)):
     existing_email = db.query(User).filter(User.email == req.email).first()
@@ -50,6 +48,7 @@ def signup(req: SignupRequest, db: Session = Depends(get_db)):
     existing_linkedin = db.query(User).filter(User.linkedin_username == linkedin_username).first()
     if existing_linkedin:
         raise HTTPException(status_code=400, detail="LinkedIn username already registered")
+    
     try:
         linkedin_username = extract_linkedin_username(req.linkedin_url)
         hashed_pw = hash_password(req.password)
@@ -63,11 +62,16 @@ def signup(req: SignupRequest, db: Session = Depends(get_db)):
         db.refresh(new_user)
     except Exception as e:
         db.rollback()
-        # Log the error for debugging
         print(f"Error while creating user: {e}")
         raise HTTPException(status_code=500, detail="An internal server error occurred")
 
-    token = create_access_token({"user_id": new_user.id, "email": new_user.email})
+    # FIXED: Include linkedin_username in JWT payload
+    token = create_access_token({
+        "user_id": new_user.id, 
+        "email": new_user.email,
+        "linkedin_username": new_user.linkedin_username
+    })
+    
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -86,7 +90,14 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
-    token = create_access_token({"user_id": user.id, "email": user.email})
+    
+    # FIXED: Include linkedin_username in JWT payload
+    token = create_access_token({
+        "user_id": user.id, 
+        "email": user.email,
+        "linkedin_username": user.linkedin_username
+    })
+    
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -104,10 +115,9 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Security(security))
     Returns decoded claims if valid.
     """
     token = credentials.credentials
-    payload = decode_access_token(token)  # raises HTTP 401 on failure
+    payload = decode_access_token(token)
     return {"valid": True, "payload": payload}
 
-# Optional: handy self-check endpoint (uses the same verification)
 @router.get("/me", response_model=UserOut)
 def me(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
     payload = decode_access_token(credentials.credentials)
@@ -122,4 +132,3 @@ def me(credentials: HTTPAuthorizationCredentials = Security(security), db: Sessi
         "email": user.email,
         "linkedin_username": user.linkedin_username,
     }
-

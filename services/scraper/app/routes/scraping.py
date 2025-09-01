@@ -226,7 +226,7 @@ async def get_user_profile_posts(
         execution_time = (datetime.utcnow() - start_time).total_seconds()
         return ProfilePostsResponse(success=False, message=str(e), total_posts=0, posts=[], from_cache=False, execution_time_seconds=execution_time)
 
-@router.get("/scrape/hashtag/posts", response_model=HashtagPostsResponse)
+@router.get("/hashtag/posts", response_model=HashtagPostsResponse)
 async def get_hashtag_posts(
     hashtag: str,
     n_posts: int = 5,
