@@ -33,9 +33,11 @@ async def proxy_hashtag_posts(
     try:
         return await call_service(
             "get",
-            f"{SCRAPER_SERVICE_URL}/scraper/scrape/hashtag/posts",
+            f"{SCRAPER_SERVICE_URL}/scraper/hashtag/posts",
             params={"hashtag": hashtag, "n_posts": n_posts},
             service_name="scraper"
         )
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Scraper service error: {e}")

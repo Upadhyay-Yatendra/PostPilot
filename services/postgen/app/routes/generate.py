@@ -108,7 +108,7 @@ async def generate_post(
             try:
                 async with httpx.AsyncClient() as client:
                     resp = await client.get(
-                        f"{SCRAPER_SERVICE_URL}/scraper/scrape/hashtag/posts",
+                        f"{SCRAPER_SERVICE_URL}/scraper/hashtag/posts",
                         params={"hashtag": hashtag, "n_posts": 5}
                     )
                     if resp.status_code == 200:
