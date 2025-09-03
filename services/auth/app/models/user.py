@@ -5,6 +5,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
-    linkedin_username = Column(String, unique=True, index=True, nullable=False)  # store only username
+    linkedin_username = Column(String, unique=True, index=True)  # <-- add this

@@ -1,0 +1,58 @@
+{
+  "identifier": "Tech",
+  "type": "hashtag",
+  "scraped_at": "2025-09-01T15:23:21.396185+05:30",
+  "total_posts": 5,
+  "posts": [
+    {
+      "text": "🌉 The Shiziguan Floating Bridge in China is a brilliant reminder of what’s possible when creativity meets ambition. 🎯 3 quick lessons for business: 1️⃣ Innovation: Bold ideas only look impossible until built. 2️⃣ Inspiration: Nature often holds the best designs. 3️⃣ Ambition: Big dreams demand courage + execution. In hospitality and travel tech, the same applies — seamless experiences are built by daring to innovate and learning from the world around us. 👉 Where do you find your best source of inspiration — data, people, or nature? hashtag #Innovation hashtag #Leadership hashtag #AI hashtag #Hospitality hashtag #Travel hashtag #Tech",
+      "likes": 478,
+      "comments": 76,
+      "reposts": 22,
+      "engagement": 576,
+      "scraped_at": "2025-09-01T09:53:19.793331",
+      "source": "hashtag",
+      "hashtag": "Tech"
+    },
+    {
+      "text": "🪄 Bringing Harry Potter's magic to life with AI! ✨ The completion of an invisibility cloak project, built using Python and computer vision, is announced. Replacing a specific color with a stored background creates a real-time, disappearing effect. This was a challenging and fun way to explore the power of hashtag #OpenCV and hashtag #ComputerVision. What started as a fun idea is now a working reality. Check out the demo video. hashtag #AiLearning hashtag #MachineLearning hashtag #Python hashtag #Deeplearning hashtag #Innovation hashtag #OpenSource The process involved: 1. Capturing a static background frame 📸 2.Detecting a specific cloth color in HSV color space 🎨 3.Applying image segmentation and morphological transformations to refine the mask. 4.Replacing the colored cloak area with the background to create the illusion. This was a fascinating exercise in background subtraction and color masking. Learned a ton about fine-tuning parameters to handle tricky lighting conditions. Future plans include exploring more advanced deep learning segmentation models for an even smoother effect. hashtag #ComputerVision hashtag #ImageProcessing hashtag #AI hashtag #Coding hashtag #ProjectUpdate hashtag #Tech",
+      "likes": 3,
+      "comments": 133,
+      "reposts": 15,
+      "engagement": 151,
+      "scraped_at": "2025-09-01T09:53:20.061880",
+      "source": "hashtag",
+      "hashtag": "Tech"
+    },
+    {
+      "text": "A Sneak Peek of me hashtag #lpu hashtag #tech # bscit",
+      "likes": 22,
+      "comments": 3,
+      "reposts": 0,
+      "engagement": 25,
+      "scraped_at": "2025-09-01T09:53:20.278954",
+      "source": "hashtag",
+      "hashtag": "Tech"
+    },
+    {
+      "text": "Your brain is not a search engine. Yet that’s what we turn it into every morning: scrolling, searching, and sifting through noise to find the signal on the exact topics we care about. What if you had a personal assistant who did that for you? Meet 𝗔𝟬𝟭. It’s your personal news agent. You don’t browse. You command. Just tell 𝗔𝟬𝟭 exactly what to follow. For example: → \"Recent news about Apple and any progress in their AI.\" → \"New product launches in the EV sector.\" → \"Latest funding rounds for Series B climate tech startups.\" Its AI finds it. Then, it brings you the latest and most relevant articles, delivering clean, focused updates—not an overwhelming firehose. The result? More focus. You stay sharp. You get back the most valuable resource: your attention. The best part? It’s completely free to get started. The Android app is launching soon, and you can join the waitlist now. Want to put your news on autopilot? Try it now👉 a01ai.com 👉𝗔𝟬𝟭 is launching today on Product Hunt! → https://lnkd.in/gY8dbac7 ♻️ Share this with a busy colleague who needs to cut through the noise. hashtag #Productivity hashtag #AI hashtag #News hashtag #Personalization hashtag #Tech hashtag #StayInformed hashtag #Focus",
+      "likes": 352,
+      "comments": 66,
+      "reposts": 8,
+      "engagement": 426,
+      "scraped_at": "2025-09-01T09:53:20.548752",
+      "source": "hashtag",
+      "hashtag": "Tech"
+    },
+    {
+      "text": "Just built my own Harry Potter Invisibility Cloak 🪄using Python + OpenCV! The idea is simple yet magical: 🪄Capture the background →Detect cloak color (red) → Replace it with background You disappear! Learned a lot about: →Computer Vision (color detection, masking) →Image Processing with OpenCV →Real-time video manipulation Github:https: https://lnkd.in/gZmaryT5 (Is it same as using a green screen cloth? It's not exactly the same as a green screen. A green screen replaces the background, but here we're replacing a specific cloth color with the background, which creates the invisibility effect.) Check out the demo 👇 and let me know your thoughts! hashtag #Python hashtag #OpenCV hashtag #ComputerVision hashtag #ArtificialIntelligence hashtag #MachineLearning hashtag #DeepLearning hashtag #Al hashtag #Innovation hashtag #DataScience hashtag #Tech hashtag #Coding hashtag #Programming hashtag #StudentProjects hashtag #Hackathon hashtag #HarryPotter hashtag #InvisibilityCloak hashtag #DemoDay hashtag #OpenSource",
+      "likes": 802,
+      "comments": 37,
+      "reposts": 4,
+      "engagement": 843,
+      "scraped_at": "2025-09-01T09:53:20.927099",
+      "source": "hashtag",
+      "hashtag": "Tech"
+    }
+  ]
+}
