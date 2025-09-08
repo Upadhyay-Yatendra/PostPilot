@@ -47,3 +47,5 @@ coverage/
 # ignoring docker-compose for dev environment for hot reloading and volume mounting
 docker-compose.override.yml
 structure.txt
+
+
