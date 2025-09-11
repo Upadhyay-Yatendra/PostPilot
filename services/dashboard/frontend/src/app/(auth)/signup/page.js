@@ -2,16 +2,52 @@
 
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import axios from "axios";
 export default function SignupPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const initialFormData = {
+    email: "",
+    password: "",
+    linkedin: "",
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
-    // You can replace this with API call
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:8001/auth/signup", {
+        email: formData.email,
+        password: formData.password,
+        linkedin_url: formData.linkedin,
+      });
+
+      // store token in sessionStorage
+      sessionStorage.setItem("access_token", response.data.access_token);
+
+      console.log("Signup successful:", response.data);
+      router.push("/dashboard");
+    } catch (err) {
+      console.log(err)
+      alert("Signup failed:", err);
+    } finally {
+      setLoading(false);
+      setFormData(initialFormData);
+    }
   };
 
   return (
@@ -46,10 +82,33 @@ export default function SignupPage() {
             <input
               type="email"
               id="email"
+              name="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               className="mt-1 block w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              required
+            />
+          </div>
+          {/* Linkedin  */}
+
+          <div>
+            <label
+              htmlFor="linkedin"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Linkedin Url
+            </label>
+            <input
+              type="text"
+              id="linkedin"
+              name="linkedin"
+              placeholder="Enter your linkedin url"
+              value={formData.linkedin}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              pattern="https:\/\/www\.linkedin\.com\/in\/.+"
+              title="LinkedIn URL must start with https://www.linkedin.com/in/ and have a profile name after it"
               required
             />
           </div>
@@ -66,10 +125,11 @@ export default function SignupPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
+                name="password"
                 placeholder="Enter a strong password"
                 minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleChange}
                 className="mt-1 block w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 required
               />
@@ -87,9 +147,8 @@ export default function SignupPage() {
           <button
             type="submit"
             className="w-full rounded-full bg-blue-500 py-3 text-white font-medium hover:bg-blue-600 transition cursor-pointer"
-            
           >
-            Signup with Email
+            {loading ? <span>Loading...</span> : <div>Signup with Email</div>}
           </button>
         </form>
       </div>
