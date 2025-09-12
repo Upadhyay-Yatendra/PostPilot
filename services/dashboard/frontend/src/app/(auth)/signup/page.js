@@ -30,7 +30,7 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8001/auth/signup", {
+      const response = await axios.post("http://localhost:8000/api/v1/auth/signup", {
         email: formData.email,
         password: formData.password,
         linkedin_url: formData.linkedin,

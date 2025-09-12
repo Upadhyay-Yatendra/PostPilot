@@ -22,14 +22,15 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# CORS Configuration - Allow all origins for development
+# CORS Configuration - Updated for proper preflight handling in dev environment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in development
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Explicitly include OPTIONS
+    allow_headers=["*"],
 )
+
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(postgen.router, prefix="/api/v1/postgen", tags=["Post Generation"])
