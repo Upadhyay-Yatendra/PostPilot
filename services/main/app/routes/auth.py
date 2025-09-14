@@ -16,8 +16,13 @@ async def signup(request: Request):
     result = await call_service("post", f"{AUTH_SERVICE_URL}/signup", json=data , service_name="auth")
     return result
 
-@router.post("/logout")
-async def logout(request: Request):
-    data = await request.json()
-    result = await call_service("post", f"{AUTH_SERVICE_URL}/logout", json=data , service_name="auth")
+@router.get("/me")
+async def me(request: Request):
+    headers = dict(request.headers)
+    result = await call_service(
+        "get",
+        f"{AUTH_SERVICE_URL}/me",
+        headers=headers,
+        service_name="auth"
+    )
     return result

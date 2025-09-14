@@ -82,6 +82,7 @@ def signup(req: SignupRequest, db: Session = Depends(get_db)):
         },
     }
 
+
 @router.post("/login", response_model=TokenOut)
 def login(req: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == req.email).first()
@@ -108,6 +109,7 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
         },
     }
 
+
 @router.get("/verify")
 def verify_token(credentials: HTTPAuthorizationCredentials = Security(security)):
     """
@@ -118,13 +120,21 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Security(security))
     payload = decode_access_token(token)
     return {"valid": True, "payload": payload}
 
+
 @router.get("/me", response_model=UserOut)
 def me(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+    
+    
+
     payload = decode_access_token(credentials.credentials)
     user_id = payload.get("user_id")
+    
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
     user = db.get(User, user_id)
+
+
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {
@@ -132,3 +142,4 @@ def me(credentials: HTTPAuthorizationCredentials = Security(security), db: Sessi
         "email": user.email,
         "linkedin_username": user.linkedin_username,
     }
+
