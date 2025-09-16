@@ -4,16 +4,48 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 export default function SignupPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+   const initialFormData = {
+     email: "",
+     password: "",
+   };
+  const [formData, setFormData] = useState(initialFormData);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
-    // You can replace this with API call
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:8000/api/v1/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // store token in sessionStorage
+      sessionStorage.setItem("access_token", response.data.access_token);
+
+      console.log("Signup successful:", response.data);
+      router.push("/dashboard");
+    } catch (err) {
+      console.log(err)
+      alert("Login failed:", err);
+    } finally {
+      setLoading(false);
+      setFormData(initialFormData);
+    }
+  };
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -45,9 +77,10 @@ export default function SignupPage() {
             <input
               type="email"
               id="email"
+              name="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               className="mt-1 block w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               required
             />
@@ -67,8 +100,9 @@ export default function SignupPage() {
                 id="password"
                 placeholder="Enter a strong password"
                 minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                name="password"
+                onChange={handleChange}
                 className="mt-1 block w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 required
               />
@@ -87,7 +121,7 @@ export default function SignupPage() {
             type="submit"
             className="w-full rounded-full bg-blue-500 py-3 text-white font-medium hover:bg-blue-600 transition cursor-pointer"
           >
-            Login with Email
+            {loading ? <span>Loading...</span> : <div>Login with Email</div>}
           </button>
         </form>
 

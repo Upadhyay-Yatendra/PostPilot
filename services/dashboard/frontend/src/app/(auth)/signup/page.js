@@ -151,6 +151,16 @@ export default function SignupPage() {
             {loading ? <span>Loading...</span> : <div>Signup with Email</div>}
           </button>
         </form>
+
+        <div className="py-10 flex items-center justify-center">
+          Already have an account?
+          <span
+            className="text-[#227cb0] ml-2 cursor-pointer"
+            onClick={() => router.push("/login")}
+          >
+            Login 
+          </span>
+        </div>
       </div>
     </div>
   );
